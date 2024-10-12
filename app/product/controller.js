@@ -1,13 +1,43 @@
 const config = require('../../config');
 const path = require('path');
 const Product = require('./models');
+const Category = require('../category/model');
+const Tag = require('../tag/model');
 const fs = require('fs');
+
 const store = async (req, res, next) => {
   console.log(req.body);
   console.log(req.file);
   console.log(config.rootPath);
   try {
     let payload = req.body;
+
+    if (payload.category) {
+      let category = await Category.findOne({
+        name: {
+          $regex: payload.category,
+          $options: 'i',
+        },
+      });
+      if (category) {
+        payload = { ...payload, category: category._id };
+      } else {
+        delete payload.category;
+      }
+    }
+    if (payload.tags && payload.tags.length > 0) {
+      let tags = await Tag.find({
+        name: {
+          $in: payload.tags,
+        },
+      });
+      if (tags.length) {
+        payload = { ...payload, tags: tags.map((tag) => tag.id) };
+      } else {
+        delete payload.tags;
+      }
+    }
+
     if (req.file) {
       let tmp_path = req.file.path;
       let originalExt = req.file.originalname.split('.')[
@@ -67,24 +97,97 @@ const store = async (req, res, next) => {
 };
 
 const index = async (req, res, next) => {
+  // if (!req.user) {
+  //   res.json({
+  //     err: 1,
+  //     message: 'You are not Login or token expired',
+  //   });
+  // }
   try {
-    const { skip = 0, limit = 10 } = req.query;
-    let product = await Product.find()
+    const {
+      skip = 0,
+      limit = 10,
+      q = '',
+      category = '',
+      tags = [],
+    } = req.query;
+
+    let criteria = {};
+
+    if (q.length) {
+      criteria.name = { $regex: q, $options: 'i' };
+    }
+
+    if (category.length) {
+      const categoryResult = await Category.findOne({
+        name: { $regex: category, $options: 'i' },
+      });
+      if (categoryResult) {
+        criteria.category = categoryResult._id;
+      } else {
+        return res.json([]);
+      }
+    }
+
+    if (tags.length) {
+      const tagsResult = await Tag.find({ name: { $in: tags } });
+      if (tagsResult.length > 0) {
+        criteria.tags = { $in: tagsResult.map((tag) => tag._id) };
+      } else {
+        return res.json([]);
+      }
+    }
+
+    console.log('Search criteria:', criteria);
+    let count = await Product.find().countDocuments();
+    const products = await Product.find(criteria)
       .skip(parseInt(skip))
-      .limit(parseInt(limit));
-    console.log(product);
-    return res.json(product);
+      .limit(parseInt(limit))
+      .populate('category')
+      .populate('tags');
+
+    console.log('Found products:', products.length);
+
+    return res.json({
+      data: products,
+      count,
+    });
   } catch (err) {
-    console.log(err);
+    console.error('Error in product index:', err);
     next(err);
   }
 };
 
 const update = async (req, res, next) => {
-  console.log('kocak');
   try {
     let payload = req.body;
     const { id } = req.params;
+
+    if (payload.category) {
+      let category = await Category.findOne({
+        name: {
+          $regex: payload.category,
+          $options: 'i',
+        },
+      });
+      if (category) {
+        payload = { ...payload, category: category._id };
+      } else {
+        delete payload.category;
+      }
+    }
+    if (payload.tags && payload.tags.length > 0) {
+      let tags = await Tag.find({
+        name: {
+          $in: payload.tags,
+        },
+      });
+      if (tags.length) {
+        payload = { ...payload, tags: tags.map((tag) => tag.id) };
+      } else {
+        delete payload.tags;
+      }
+    }
 
     if (req.file) {
       let tmp_path = req.file.path;

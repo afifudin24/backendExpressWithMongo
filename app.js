@@ -4,9 +4,15 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
+const { decodeToken } = require('./middlewares');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const productRoute = require('./app/product/router');
+const categoryRoute = require('./app/category/router');
+const tagRoute = require('./app/tag/router');
+const authRoute = require('./app/auth/router');
+const deliveryAddressRoute = require('./app/deliveryAddress/router');
+const cartRoute = require('./app/cart/router');
 
 var app = express();
 
@@ -19,11 +25,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(decodeToken());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api', productRoute);
-
+app.use('/api', categoryRoute);
+app.use('/api', tagRoute);
+app.use('/api', deliveryAddressRoute);
+app.use('/api', cartRoute);
+app.use('/auth', authRoute);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
@@ -37,6 +48,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
+  console.log(err);
   res.render('error');
 });
 // var port = process.env.PORT || 3000;
