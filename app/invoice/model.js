@@ -1,41 +1,10 @@
-const mongoose = require('mongoose');
-const { type } = require('os');
-const { model, Schema } = mongoose;
+const { model, Schema } = require('mongoose');
 
 const invoiceSchema = Schema(
   {
-    sub_total: {
+    totals: {
       type: Number,
-      requried: [true, 'Sub total  harus diisi'],
-    },
-    delivery_fee: {
-      type: Number,
-      required: [true, 'delivery fee harus diisi'],
-    },
-    delivery_address: {
-      provinsi: {
-        type: String,
-        required: [true, 'Provinsi harus diisi'],
-      },
-      kabupaten: {
-        type: String,
-        required: [true, 'Kabupaten harus diisi'],
-      },
-      kecamatan: {
-        type: String,
-        required: [true, 'Kecamatan harus diisi'],
-      },
-      kelurahan: {
-        type: String,
-        required: [true, 'Kelurahan harus diisi'],
-      },
-      detail: {
-        type: String,
-      },
-    },
-    total: {
-      type: Number,
-      required: [true, 'total harus diisi'],
+      default: 0,
     },
     payment_status: {
       type: String,
@@ -49,6 +18,10 @@ const invoiceSchema = Schema(
     order: {
       type: Schema.Types.ObjectId,
       ref: 'Order',
+    },
+    uploadPrice: {
+      type: String,
+      default: 'default',
     },
   },
   {

@@ -13,8 +13,9 @@ const tagRoute = require('./app/tag/router');
 const authRoute = require('./app/auth/router');
 const deliveryAddressRoute = require('./app/deliveryAddress/router');
 const cartRoute = require('./app/cart/router');
-const orderRoute = require('./app/order/model');
-const invoiceRoute = require('./app/invoice/model');
+const orderRoute = require('./app/order/router');
+const invoiceRoute = require('./app/invoice/router');
+const deliveryPrice = require('./app/deliveryPrices/router');
 
 var app = express();
 
@@ -38,6 +39,7 @@ app.use('/api', deliveryAddressRoute);
 app.use('/api', cartRoute);
 app.use('/api', orderRoute);
 app.use('/api', invoiceRoute);
+app.use('/api', deliveryPrice);
 app.use('/auth', authRoute);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

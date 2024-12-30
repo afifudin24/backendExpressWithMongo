@@ -1,0 +1,54 @@
+[{
+  "_id": {
+    "$oid": "67432d55810f92bcd1737606"
+  },
+  "us_id": "ID1",
+  "us_name": "afif",
+  "us_password": "$2b$10$JjHTKvNzG2bJnOVpBpOXouWjPrgUHqzE0r5jNTa.lKejIk.24fFre",
+  "us_email": "afifrider507@gmail.com",
+  "us_phone_number": "081548769365",
+  "us_address": "Surusunda",
+  "us_created_at": {
+    "$date": "2024-11-24T13:42:45.761Z"
+  },
+  "us_updated_at": {
+    "$date": "2024-11-24T13:42:45.761Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6746902ffa7bba0937edcfef"
+  },
+  "us_id": "2u4qsf8oxob",
+  "us_name": "aw",
+  "us_password": "$2b$10$lVpD2VanlTRj/Q46RxBUCuLLoOyiC3HsnfVFQpMSz3OQs/dfDO5LS",
+  "us_email": "aw@gmail.com",
+  "us_phone_number": "6281548769365",
+  "us_address": "Desa Surusunda Rt 01 Rw 03",
+  "us_created_at": {
+    "$date": "2024-11-27T03:21:19.561Z"
+  },
+  "us_updated_at": {
+    "$date": "2024-11-27T03:21:19.561Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67469141fa7bba0937edcff5"
+  },
+  "us_id": "ry80mi6sc3g",
+  "us_name": "Kocak",
+  "us_password": "$2b$10$s6FOYE//NRmWRQY4whDc/OnhVYYD8M7/OsNjKuyYtrYIV2QRbftVK",
+  "us_email": "kocak@gmail.com",
+  "us_phone_number": "6281548769365",
+  "us_address": "Desa Surusunda Rt 01 Rw 03",
+  "us_created_at": {
+    "$date": "2024-11-27T03:25:53.079Z"
+  },
+  "us_updated_at": {
+    "$date": "2024-11-27T03:25:53.079Z"
+  },
+  "__v": 0
+}]

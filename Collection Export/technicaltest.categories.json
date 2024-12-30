@@ -1,0 +1,15 @@
+[{
+  "_id": {
+    "$oid": "674321d4810f92bcd1737545"
+  },
+  "ct_id": "1",
+  "ct_code": "drink",
+  "ct_name": "Drinks",
+  "ct_created_at": {
+    "$date": "2024-11-24T12:53:40.923Z"
+  },
+  "ct_updated_at": {
+    "$date": "2024-11-24T12:53:40.924Z"
+  },
+  "__v": 0
+}]

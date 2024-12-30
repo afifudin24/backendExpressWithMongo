@@ -5,7 +5,7 @@ const categoryController = require('./controller');
 router.get('/categories', categoryController.index);
 router.post(
   '/categories',
-  police_check('create', 'Category'),
+  // police_check('create', 'Category'),
   categoryController.store,
 );
 

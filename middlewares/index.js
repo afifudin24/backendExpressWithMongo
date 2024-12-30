@@ -6,13 +6,14 @@ function decodeToken() {
   return async function (req, res, next) {
     try {
       let token = getToken(req);
+      console.log('initooken', token);
       console.log(token);
       if (!token) {
+        console.log('kosong');
         return next();
       }
-
       req.user = jwt.verify(token, config.secretKey);
-      console.log(req.user);
+
       let user = await User.findOne({ token: { $in: [token] } });
       console.log(user);
       if (!user) {
@@ -22,7 +23,18 @@ function decodeToken() {
         });
       }
     } catch (err) {
+      let token = getToken(req);
       if (err && err.name === 'JsonWebTokenError') {
+        return res.json({
+          error: 1,
+          message: err.message,
+        });
+      } else if (err && err.name === 'TokenExpiredError') {
+        let user = await User.findOneAndUpdate(
+          { token: { $in: [token] } },
+          { $pull: { token: token } },
+          { new: true, useFindAndModify: false },
+        );
         return res.json({
           error: 1,
           message: err.message,

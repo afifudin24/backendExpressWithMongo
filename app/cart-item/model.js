@@ -4,7 +4,7 @@ const { model, Schema } = mongoose;
 const cartItemSchema = Schema({
   name: {
     type: String,
-    minlength: [5, 'Panjang minimal nama cart adalah 5 karakter'],
+    minlength: [3, 'Panjang minimal nama cart adalah 5 karakter'],
     required: [true, 'Name must be filled'],
   },
 

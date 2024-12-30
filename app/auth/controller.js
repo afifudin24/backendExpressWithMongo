@@ -28,12 +28,23 @@ const localStrategy = async (email, password, done) => {
     let user = await User.findOne({ email }).select(
       '-__v -createdAt -updatedAt -cart_items -token',
     );
-    if (!user) return done();
-    if (bcrypt.compareSync(password, user.password)) {
-      ({ password, ...userWithoutPassword } = user.toJSON());
-      return done(null, userWithoutPassword);
+
+    // Jika pengguna tidak ditemukan
+    if (!user) {
+      return done(null, false, { message: 'User  not found' }); // Menyediakan pesan untuk kesalahan
     }
-  } catch (err) {}
+
+    // Memeriksa apakah password sesuai
+    if (!bcrypt.compareSync(password, user.password)) {
+      return done(null, false, { message: 'Invalid password' }); // Menyediakan pesan untuk kesalahan
+    }
+
+    // Jika password cocok, hapus password dari objek pengguna
+    const { password: _, ...userWithoutPassword } = user.toJSON();
+    return done(null, userWithoutPassword); // Mengembalikan pengguna tanpa password
+  } catch (err) {
+    return done(err); // Mengembalikan kesalahan jika terjadi
+  }
 };
 
 const login = (req, res, next) => {
@@ -47,7 +58,7 @@ const login = (req, res, next) => {
         error: 1,
         message: 'Email or password incorrect',
       });
-    let signed = jwt.sign(user, secretKey);
+    let signed = jwt.sign(user, secretKey, { expiresIn: '5h' });
     await User.findByIdAndUpdate(user._id, { $push: { token: signed } });
     res.json({
       message: 'Login Successfully',
@@ -65,7 +76,7 @@ const logout = async (req, res, next) => {
     { $pull: { token: token } },
     { new: true, useFindAndModify: false },
   );
-
+  console.log(user);
   if (!token || !user) {
     res.json({
       error: 1,
@@ -79,8 +90,8 @@ const logout = async (req, res, next) => {
 };
 
 const me = (req, res, next) => {
-  console.log(req);
-  console.log('kocak');
+  console.log(req.user);
+  // console.log('kocak');
   if (!req.user) {
     res.json({
       err: 1,

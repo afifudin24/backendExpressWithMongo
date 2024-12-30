@@ -3,22 +3,28 @@ const DeliveryAddress = require('../deliveryAddress/model');
 const Order = require('../order/model');
 const { Types } = require('mongoose');
 const Orderitem = require('../order-item/model');
+const Invoice = require('../invoice/model');
 
 const store = async (req, res, next) => {
+  console.log(req.body);
   try {
-    let { delivery_fee, delivery_address } = req.body;
+    let { delivery_fee, delivery_address, totalAmount } = req.body;
+
+    // Ambil item dari keranjang berdasarkan user
     let items = await CartItem.find({ user: req.user._id }).populate('product');
-    if (!items) {
+    if (!items.length) {
       return res.json({
         error: 1,
-        message: `You're not create order because you have not items in cart`,
+        message: `You can't create an order because your cart is empty.`,
       });
     }
+    // Ambil alamat pengiriman
     let address = await DeliveryAddress.findById(delivery_address);
+    // Buat order baru
     let order = new Order({
       _id: new Types.ObjectId(),
       status: 'waiting_payment',
-      delivery_fee: delivery_fee,
+      delivery_fee: parseInt(delivery_fee),
       delivery_address: {
         provinsi: address.provinsi,
         kabupaten: address.kabupaten,
@@ -28,9 +34,9 @@ const store = async (req, res, next) => {
       },
       user: req.user._id,
     });
+    // Masukkan item ke dalam order_items
     let orderItems = await Orderitem.insertMany(
       items.map((item) => ({
-        ...item,
         name: item.product.name,
         qty: parseInt(item.qty),
         price: parseInt(item.product.price),
@@ -39,11 +45,25 @@ const store = async (req, res, next) => {
       })),
     );
     orderItems.forEach((item) => order.order_items.push(item));
-    order.save();
+    await order.save();
+    // Hapus semua item dari keranjang setelah pesanan dibuat
     await CartItem.deleteMany({ user: req.user._id });
-    return res.json(order);
+    // Buat invoice baru
+    let invoice = new Invoice({
+      totals: parseInt(totalAmount),
+      payment_status: 'waiting_payment',
+      user: req.user._id,
+      order: order._id,
+    });
+    await invoice.save();
+
+    console.log(invoice);
+
+    // Kirim response order dan invoice
+    return res.json({ order, invoice });
   } catch (err) {
-    if (err && err.name == 'ValidationError') {
+    console.log(err);
+    if (err && err.name === 'ValidationError') {
       return res.json({
         error: 1,
         message: err.message,

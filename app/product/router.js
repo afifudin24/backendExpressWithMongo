@@ -9,7 +9,7 @@ router.get('/products', productController.index);
 router.post(
   '/products',
   multer({ dest: os.tmpdir() }).single('image'),
-  police_check('create', 'Product'),
+  // police_check('create', 'Product'),
   productController.store,
 );
 router.put(

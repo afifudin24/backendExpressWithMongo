@@ -139,7 +139,7 @@ const index = async (req, res, next) => {
     }
 
     console.log('Search criteria:', criteria);
-    let count = await Product.find().countDocuments();
+    let count = await Product.find().countDocuments(criteria);
     const products = await Product.find(criteria)
       .skip(parseInt(skip))
       .limit(parseInt(limit))
